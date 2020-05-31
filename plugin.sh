@@ -125,4 +125,4 @@ echo DESTINATIONS: ${DESTINATIONS} >&2
     ${CACHE_REPO:-} \
     ${TARGET:-} \
     ${BUILD_ARGS:-} \
-    ${BUILD_ARGS_FROM_ENV:-}
+    ${BUILD_ARGS_FROM_ENV:-} >&2
