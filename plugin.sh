@@ -75,19 +75,36 @@ if [[ "${PLUGIN_AUTO_TAG:-}" == "true" ]]; then
         major=$(echo "${TAG}" |awk -F'.' '{print $1}')
         minor=$(echo "${TAG}" |awk -F'.' '{print $2}')
         release=$(echo "${TAG}" |awk -F'.' '{print $3}')
-    
+
         major=${major:-0}
         minor=${minor:-0}
         release=${release:-0}
-    
+
         echo "${major},${major}.${minor},${major}.${minor}.${release},latest" > .tags
-    fi  
+    fi
 fi
 
 if [ -n "${PLUGIN_TAGS:-}" ]; then
-    DESTINATIONS=$(echo "${PLUGIN_TAGS}" | tr ',' '\n' | while read tag; do echo "--destination=${REGISTRY}/${PLUGIN_REPO}:${tag} "; done)
-elif [ -f .tags ]; then
-    DESTINATIONS=$(cat .tags| tr ',' '\n' | while read tag; do echo "--destination=${REGISTRY}/${PLUGIN_REPO}:${tag} "; done)
+    if [ -f .tags ]; then
+        echo $(head -1 .tags),${PLUGIN_TAGS} > .tags.tmp
+        mv .tags.tmp .tags
+    else
+        echo "No auto tags generated, just using tags from config"
+        echo ${PLUGIN_TAGS} > .tags
+    fi
+fi
+
+if [ -f .tags ]; then
+    DESTINATIONS=$(cat .tags| tr ',' '\n' | \
+        while read tag; do
+            echo "Setting up destination for $tag" >> /dev/stderr
+            if [ "${tag}" == "SHA7" ]; then
+                echo "SHA7 tag ..." >> /dev/stderr
+                tag=$(echo ${DRONE_COMMIT_SHA} | cut -c1-7)
+                echo "Now: $tag"  >> /dev/stderr
+            fi
+            echo "--destination=${REGISTRY}/${PLUGIN_REPO}:${tag} ";
+        done)
 elif [ -n "${PLUGIN_REPO:-}" ]; then
     DESTINATIONS="--destination=${REGISTRY}/${PLUGIN_REPO}:latest"
 else
@@ -95,6 +112,8 @@ else
     # Cache is not valid with --no-push
     CACHE=""
 fi
+
+echo DESTINATIONS: ${DESTINATIONS} >&2
 
 /kaniko/executor -v ${LOG} \
     --context=${CONTEXT} \
