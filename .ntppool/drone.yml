@@ -4,7 +4,8 @@ name: default
 
 steps:
 - name: docker  
-  image: askbjoernhansen/drone-kaniko:0.22-6
+  image: harbor.ntppool.org/ntppool/drone-kaniko:main
+  pull: always
   settings:
     dockerfile: Dockerfile
     repo: ntppool/drone-kaniko

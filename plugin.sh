@@ -2,14 +2,21 @@
 
 set -euo pipefail
 
+DRONE_KANIKO_VERSION=0.8.0-dev1
+
+echo "Drone Kaniko Plugin v${DRONE_KANIKO_VERSION}"
+
 export PATH=$PATH:/kaniko/
 
 REGISTRY=${PLUGIN_REGISTRY:-index.docker.io}
+PLUGIN_DOCKER_CONFIG=${PLUGIN_DOCKER_CONFIG:-}
+
+DOCKER_CONFIG_PATH=/kaniko/.docker/config.json
 
 if [ "${PLUGIN_USERNAME:-}" ] || [ "${PLUGIN_PASSWORD:-}" ]; then
     DOCKER_AUTH=`echo -n "${PLUGIN_USERNAME}:${PLUGIN_PASSWORD}" | base64 | tr -d "\n"`
 
-    cat > /kaniko/.docker/config.json <<DOCKERJSON
+    cat > ${DOCKER_CONFIG_PATH} <<DOCKERJSON
 {
     "auths": {
         "${REGISTRY}": {
@@ -18,6 +25,14 @@ if [ "${PLUGIN_USERNAME:-}" ] || [ "${PLUGIN_PASSWORD:-}" ]; then
     }
 }
 DOCKERJSON
+fi
+
+if [ -n "${PLUGIN_DOCKER_CONFIG}" ]; then
+    (echo ${PLUGIN_DOCKER_CONFIG}; echo
+     if [ -f "${DOCKER_CONFIG_PATH}" ]; then
+         cat ${DOCKER_CONFIG_PATH}
+     fi
+    ) | /kaniko/jq -s '.[0] * .[1]' > ${DOCKER_CONFIG_PATH}.tmp && mv ${DOCKER_CONFIG_PATH}.tmp ${DOCKER_CONFIG_PATH}
 fi
 
 if [ "${PLUGIN_JSON_KEY:-}" ];then
@@ -114,6 +129,8 @@ else
 fi
 
 echo DESTINATIONS: ${DESTINATIONS} >&2
+
+set -x
 
 /kaniko/executor -v ${LOG} \
     --context=${CONTEXT} \

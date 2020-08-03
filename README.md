@@ -24,6 +24,7 @@ steps:
       from_secret: docker-username
     password:
       from_secret: docker-password
+
 ```
 
 Pushing to GCR:
@@ -99,6 +100,16 @@ steps:
     password:
       from_secret: docker-password
 ```
+
+## Docker config.json authentication
+
+If you need to authenticate to other registries (for pulling images
+for example) add the contents of `.docker/config.json` to a secret and
+reference it like:
+
+    docker_config:
+      from_secret: docker-auth
+
 
 ## Test that it can build
 
