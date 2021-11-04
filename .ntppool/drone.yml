@@ -3,8 +3,15 @@ type: kubernetes
 name: default
 
 steps:
-- name: docker  
-  image: harbor.ntppool.org/ntppool/drone-kaniko:0.8.0-1
+- name: fetch tags, set version
+  image: alpine/git
+  commands:
+  - apk --no-cache add sed
+  - git fetch --tags
+  - .ntppool/build.sh
+
+- name: docker
+  image: harbor.ntppool.org/ntppool/drone-kaniko:manual-2
   pull: always
   settings:
     dockerfile: Dockerfile
