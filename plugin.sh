@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-DRONE_KANIKO_VERSION=1.0.0
+DRONE_KANIKO_VERSION=0-dev
 
 echo "Drone Kaniko Plugin v${DRONE_KANIKO_VERSION}"
 

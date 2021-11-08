@@ -18,7 +18,7 @@ steps:
     repo: ntppool/drone-kaniko
     registry: harbor.ntppool.org
     auto_tag: true
-    tags: SHA7,${DRONE_SOURCE_BRANCH}
+    tags: SHAABBREV,${DRONE_SOURCE_BRANCH}
     cache: true
     username:
       from_secret: harbor_username
