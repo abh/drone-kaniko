@@ -113,11 +113,15 @@ if [ -f .tags ]; then
     DESTINATIONS=$(cat .tags| tr ',' '\n' | \
         while read tag; do
             echo "Setting up destination for $tag" >> /dev/stderr
-            if [ "${tag}" == "SHA7" ]; then
-                echo "SHA7 tag ..." >> /dev/stderr
+            if [[ "${tag}" == "SHA7" ]]; then
                 tag=$(echo ${DRONE_COMMIT_SHA} | cut -c1-7)
-                echo "Now: $tag"  >> /dev/stderr
+                echo "SHA7: $tag"  >> /dev/stderr
             fi
+            if [[ "${tag}" == "SHAABBREV" ]]; then
+                tag=$(echo ${DRONE_COMMIT_SHA} | cut -c1-8)
+                echo "SHA abbreviation: $tag"  >> /dev/stderr
+            fi
+
             echo "--destination=${REGISTRY}/${PLUGIN_REPO}:${tag} ";
         done)
 elif [ -n "${PLUGIN_REPO:-}" ]; then

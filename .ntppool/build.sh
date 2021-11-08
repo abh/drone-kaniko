@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-env | sort
+pwd
 
 VERSION=$(echo "${DRONE_TAG:-}" |sed 's/^v//g')
 BUILD=${DRONE_BUILD_NUMBER:-dev}
