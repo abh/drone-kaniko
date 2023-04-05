@@ -4,7 +4,7 @@ set -euo pipefail
 
 DRONE_KANIKO_VERSION=0-dev
 
-echo "Drone Kaniko Plugin v${DRONE_KANIKO_VERSION}"
+echo "Drone Kaniko Plugin ${DRONE_KANIKO_VERSION}"
 
 export PATH=$PATH:/kaniko/
 
