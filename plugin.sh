@@ -95,7 +95,8 @@ if [[ "${PLUGIN_AUTO_TAG:-}" == "true" ]]; then
         minor=${minor:-0}
         release=${release:-0}
 
-        echo "${major},${major}.${minor},${major}.${minor}.${release},latest" > .tags
+        echo -n "${major},${major}.${minor},${major}.${minor}.${release},latest," > .tags
+        echo    "v${major},v${major}.${minor},v${major}.${minor}.${release}" >> .tags
     fi
 fi
 
